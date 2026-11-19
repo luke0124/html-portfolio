@@ -3,6 +3,7 @@
 
   var ARROW = '<svg viewBox="0 0 34 14" fill="none" aria-hidden="true"><path d="M0 7h32M26 1l6 6-6 6" stroke="currentColor" stroke-width="1.5"/></svg>';
   var page = document.body.getAttribute('data-page') || '';
+  var ROOT = document.body.getAttribute('data-root') || '';
 
   var links = [
     ['index.html', 'Home', 'home'],
@@ -16,7 +17,7 @@
   function navLinks() {
     return links.map(function (l, i) {
       var cur = l[2] === page ? ' aria-current="page"' : '';
-      return '<a href="' + l[0] + '"' + cur + '><span>0' + (i + 1) + '</span>' + l[1] + '</a>';
+      return '<a href="' + ROOT + l[0] + '"' + cur + '><span>0' + (i + 1) + '</span>' + l[1] + '</a>';
     }).join('');
   }
 
@@ -24,8 +25,8 @@
   var header = document.createElement('header');
   header.className = 'site-header';
   header.innerHTML =
-    '<a class="brand" href="index.html" aria-label="Manterfield Building &amp; Roofing — home">' +
-      '<img src="images/logo.png" alt="Manterfield Building &amp; Roofing" width="600" height="347"></a>' +
+    '<a class="brand" href="' + ROOT + 'index.html" aria-label="Manterfield Building &amp; Roofing — home">' +
+      '<img src="' + ROOT + 'images/logo.png" alt="Manterfield Building &amp; Roofing" width="600" height="347"></a>' +
     '<div class="header-actions">' +
       '<a class="header-call" href="tel:01226781344">01226 781344</a>' +
       '<button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>' +
@@ -37,7 +38,7 @@
   menu.setAttribute('aria-hidden', 'true');
   menu.innerHTML =
     '<div class="menu-top">' +
-      '<a class="brand" href="index.html" aria-label="Home"><img src="images/logo.png" alt="Manterfield Building &amp; Roofing" width="600" height="347"></a>' +
+      '<a class="brand" href="' + ROOT + 'index.html" aria-label="Home"><img src="' + ROOT + 'images/logo.png" alt="Manterfield Building &amp; Roofing" width="600" height="347"></a>' +
       '<button class="menu-btn" type="button" data-close>Close</button>' +
     '</div>' +
     '<nav aria-label="Main">' + navLinks() + '</nav>' +
@@ -73,7 +74,7 @@
       '<div class="wordmark" aria-hidden="true">Manterfield</div>' +
       '<div class="foot-cta">' +
         '<h2>Tell us about your project</h2>' +
-        '<a class="link-row" href="contact.html">Call for a FREE home consultation &amp; quotation' + ARROW + '</a>' +
+        '<a class="link-row" href="' + ROOT + 'contact.html">Call for a FREE home consultation &amp; quotation' + ARROW + '</a>' +
       '</div>' +
       '<div class="foot-grid">' +
         '<div><a href="tel:01226781344">01226 781344</a><br><a href="tel:07866255639">07866 255639</a><br>' +
@@ -83,7 +84,7 @@
           '<li><a href="https://www.facebook.com/profile.php?id=61560415476579" target="_blank" rel="noopener">Facebook</a></li>' +
           '<li><a href="https://www.google.com/search?q=manterfield+builders" target="_blank" rel="noopener">Google Reviews</a></li>' +
         '</ul></div>' +
-        '<div><ul>' + links.map(function (l) { return '<li><a href="' + l[0] + '">' + l[1] + '</a></li>'; }).join('') + '</ul></div>' +
+        '<div><ul>' + links.map(function (l) { return '<li><a href="' + ROOT + l[0] + '">' + l[1] + '</a></li>'; }).join('') + '</ul></div>' +
         '<div class="r end">259a Pontefract Road<br>Cudworth<br>Barnsley, South Yorkshire<br>S72 8AQ</div>' +
       '</div>' +
       '<div class="foot-base">' +
@@ -205,6 +206,53 @@
         '\nService: ' + (d.get('service') || '') + '\n\n' + d.get('message');
       window.location.href = 'mailto:manterfield1@btinternet.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
       form.querySelector('.form-ok').classList.add('show');
+    });
+  }
+
+  /* ---------- Gallery lightbox ---------- */
+  var gallery = document.querySelectorAll('[data-lightbox]');
+  if (gallery.length) {
+    var items = Array.prototype.map.call(gallery, function (a) { return { src: a.getAttribute('href'), alt: (a.querySelector('img') || {}).alt || '' }; });
+    var box = document.createElement('div');
+    box.className = 'lightbox';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.setAttribute('aria-label', 'Photo viewer');
+    box.innerHTML =
+      '<div class="lb-top"><span class="lb-count"></span><button type="button" class="lb-close">Close</button></div>' +
+      '<figure class="lb-stage"><img alt=""></figure>' +
+      '<div class="lb-nav"><button type="button" class="lb-prev">Prev</button><button type="button" class="lb-next">Next</button></div>';
+    document.body.appendChild(box);
+    var lbImg = box.querySelector('img'), lbCount = box.querySelector('.lb-count');
+    var cur = 0, lastFocus = null;
+    function pad2(n) { return (n < 10 ? '0' : '') + n; }
+    function show(i) {
+      cur = (i + items.length) % items.length;
+      lbImg.src = items[cur].src;
+      lbImg.alt = items[cur].alt;
+      lbCount.innerHTML = pad2(cur + 1) + ' <span>/ ' + pad2(items.length) + '</span>';
+      [cur - 1, cur + 1].forEach(function (j) { var im = new Image(); im.src = items[(j + items.length) % items.length].src; });
+    }
+    function open(i) { lastFocus = document.activeElement; show(i); box.classList.add('is-open'); document.body.classList.add('menu-open'); box.querySelector('.lb-close').focus(); }
+    function close() { box.classList.remove('is-open'); document.body.classList.remove('menu-open'); if (lastFocus) lastFocus.focus(); }
+    Array.prototype.forEach.call(gallery, function (a, i) { a.addEventListener('click', function (e) { e.preventDefault(); open(i); }); });
+    box.querySelector('.lb-close').addEventListener('click', close);
+    box.querySelector('.lb-prev').addEventListener('click', function () { show(cur - 1); });
+    box.querySelector('.lb-next').addEventListener('click', function () { show(cur + 1); });
+    box.addEventListener('click', function (e) { if (e.target === box || e.target.classList.contains('lb-stage')) close(); });
+    document.addEventListener('keydown', function (e) {
+      if (!box.classList.contains('is-open')) return;
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowLeft') show(cur - 1);
+      else if (e.key === 'ArrowRight') show(cur + 1);
+    });
+    var lx = null;
+    box.addEventListener('touchstart', function (e) { lx = e.touches[0].clientX; }, { passive: true });
+    box.addEventListener('touchend', function (e) {
+      if (lx === null) return;
+      var dx = e.changedTouches[0].clientX - lx;
+      if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1));
+      lx = null;
     });
   }
 })();
