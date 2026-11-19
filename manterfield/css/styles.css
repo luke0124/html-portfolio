@@ -381,3 +381,5 @@ form.enquiry { display: grid; gap: 18px; }
 @media (max-width: 560px) { .fmb-inner { flex-direction: column; align-items: flex-start; } .fmb-inner img { width: 190px; } }
 .foot-fmb { display: inline-flex; align-items: center; gap: 12px; }
 .foot-fmb img { width: 120px; }
+.cta-inline { color: var(--lime); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.cta-inline:hover { color: #fff; }
