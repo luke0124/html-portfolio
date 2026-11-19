@@ -383,3 +383,13 @@ form.enquiry { display: grid; gap: 18px; }
 .foot-fmb img { width: 120px; }
 .cta-inline { color: var(--lime); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 .cta-inline:hover { color: #fff; }
+
+/* Home: three promises */
+.promises .eyebrow { margin-bottom: clamp(24px, 3vw, 40px); }
+.promise-grid { display: grid; grid-template-columns: 1fr; gap: 0; border-top: 1px solid var(--ink); }
+@media (min-width: 900px) { .promise-grid { grid-template-columns: repeat(3, 1fr); column-gap: clamp(24px, 3vw, 48px); } }
+.promise { padding: 22px 0 30px; border-bottom: 1px solid var(--line); }
+@media (min-width: 900px) { .promise { border-bottom: 0; padding-bottom: 8px; } }
+.promise .num { display: block; font-size: 15px; font-weight: 600; color: var(--purple); margin-bottom: clamp(18px, 3vw, 56px); }
+.promise h2 { font-size: clamp(28px, 3vw, 44px); letter-spacing: -0.035em; line-height: 1.04; max-width: 12ch; }
+.promise p { margin-top: 14px; font-size: clamp(17px, 1.4vw, 20px); font-weight: 500; line-height: 1.4; color: var(--ink-soft); max-width: 28ch; }
