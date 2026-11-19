@@ -97,18 +97,31 @@
   /* ---------- Arrow placeholders ---------- */
   document.querySelectorAll('[data-arrow]').forEach(function (el) { el.insertAdjacentHTML('beforeend', ARROW); });
 
-  /* ---------- Hero video: pick a size, respect reduced motion ---------- */
+  /* ---------- Hero video ---------- */
   var heroVideo = document.querySelector('video.hero-media');
   if (heroVideo) {
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduce) {
-      var big = Math.max(window.innerWidth, window.innerHeight) * (window.devicePixelRatio || 1) > 1280 && window.innerWidth >= 900;
-      heroVideo.src = heroVideo.getAttribute(big ? 'data-src-large' : 'data-src-small');
-      var p = heroVideo.play();
-      if (p && p.catch) p.catch(function () { /* autoplay blocked: poster stays visible */ });
-    } else {
-      heroVideo.removeAttribute('autoplay');
+    // Larger screens get the 1080p file; phones keep the 720p <source> from the HTML.
+    var big = window.innerWidth >= 900 && window.innerWidth * (window.devicePixelRatio || 1) > 1280;
+    if (big) {
+      var t = heroVideo.currentTime;
+      heroVideo.querySelector('source').src = heroVideo.getAttribute('data-src-large');
+      heroVideo.load();
+      if (t) heroVideo.currentTime = t;
     }
+    var toggle = document.querySelector('.hero-toggle');
+    function setLabel() {
+      var paused = heroVideo.paused;
+      toggle.textContent = paused ? 'Play' : 'Pause';
+      toggle.setAttribute('aria-label', (paused ? 'Play' : 'Pause') + ' background video');
+    }
+    function tryPlay() {
+      var pr = heroVideo.play();
+      if (pr && pr.catch) pr.catch(function () { setLabel(); });
+    }
+    heroVideo.addEventListener('play', setLabel);
+    heroVideo.addEventListener('pause', setLabel);
+    toggle.addEventListener('click', function () { if (heroVideo.paused) tryPlay(); else heroVideo.pause(); });
+    tryPlay();
   }
 
   /* ---------- Header state on scroll ---------- */

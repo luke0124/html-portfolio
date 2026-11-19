@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=4">
 </head>
 <body data-page="home">
   <a class="skip" href="#main">Skip to content</a>
@@ -19,8 +19,11 @@
     <!-- Hero -->
     <section class="hero">
       <video class="hero-media" autoplay muted loop playsinline preload="auto" poster="videos/hero-poster.jpg"
-             data-src-small="videos/hero-720.mp4" data-src-large="videos/hero-1080.mp4"
-             aria-label="Drone footage of Manterfield new builds, re-roofs and extensions"></video>
+             data-src-large="videos/hero-1080.mp4"
+             aria-label="Drone footage of Manterfield new builds, re-roofs and extensions">
+        <source src="videos/hero-720.mp4" type="video/mp4">
+      </video>
+      <button class="hero-toggle" type="button" aria-label="Pause background video">Pause</button>
       <div class="hero-inner wrap">
         <h1>From a slipped roof tile to luxury new build.</h1>
         <div class="hero-meta">
@@ -150,6 +153,6 @@
     <img class="full-bleed reveal-img" src="images/extension-bifold.jpg" alt="Rear extension with bi-fold doors opening onto the lawn" loading="lazy">
   </main>
 
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=4"></script>
 </body>
 </html>

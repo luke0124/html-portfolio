@@ -109,6 +109,13 @@ body.menu-open { overflow: hidden; }
 .hero-meta { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-top: 28px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.35); font-weight: 500; font-size: 15px; }
 .hero-meta a { display: inline-flex; gap: 10px; align-items: center; font-weight: 600; white-space: nowrap; }
 .hero-meta a svg { width: 30px; height: 12px; }
+.hero-toggle {
+  position: absolute; z-index: 3; right: var(--gutter); top: 50%; transform: translateY(-50%);
+  border: 1px solid rgba(255,255,255,.45); background: rgba(20,15,25,.35); color: #fff;
+  font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); opacity: .8; transition: opacity .2s;
+}
+.hero-toggle:hover { opacity: 1; }
 @keyframes heroIn { to { transform: scale(1); } }
 
 .page-hero { padding: 150px 0 clamp(40px, 6vw, 80px); }
