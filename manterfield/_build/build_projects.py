@@ -95,7 +95,7 @@ def head(title, desc, root, page):
 
 def tail(root):
     return f'''  </main>
-  <script src="{root}js/main.js?v=7"></script>
+  <script src="{root}js/main.js?v=8"></script>
 </body>
 </html>
 '''
