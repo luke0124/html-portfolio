@@ -97,6 +97,20 @@
   /* ---------- Arrow placeholders ---------- */
   document.querySelectorAll('[data-arrow]').forEach(function (el) { el.insertAdjacentHTML('beforeend', ARROW); });
 
+  /* ---------- Hero video: pick a size, respect reduced motion ---------- */
+  var heroVideo = document.querySelector('video.hero-media');
+  if (heroVideo) {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+      var big = Math.max(window.innerWidth, window.innerHeight) * (window.devicePixelRatio || 1) > 1280 && window.innerWidth >= 900;
+      heroVideo.src = heroVideo.getAttribute(big ? 'data-src-large' : 'data-src-small');
+      var p = heroVideo.play();
+      if (p && p.catch) p.catch(function () { /* autoplay blocked: poster stays visible */ });
+    } else {
+      heroVideo.removeAttribute('autoplay');
+    }
+  }
+
   /* ---------- Header state on scroll ---------- */
   var hasHero = !!document.querySelector('.hero');
   var lastY = window.scrollY;
