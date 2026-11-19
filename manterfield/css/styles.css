@@ -369,3 +369,5 @@ form.enquiry { display: grid; gap: 18px; }
 .lb-stage img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .filter button .muted { font-weight: 500; margin-left: 4px; }
 .filter button.is-active .muted { color: var(--on-dark-soft); }
+.lede-body { max-width: 52ch; margin: 28px auto 0; text-align: center; font-size: clamp(17px, 1.4vw, 20px); font-weight: 500; line-height: 1.5; color: var(--ink-soft); }
+.lede-strong { font-size: clamp(26px, 3.4vw, 48px); font-weight: 600; line-height: 1.12; letter-spacing: -0.03em; max-width: 22ch; text-wrap: balance; }
