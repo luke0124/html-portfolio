@@ -77,7 +77,7 @@
         '<a class="link-row" href="' + ROOT + 'contact.html">Call for a FREE home consultation &amp; quotation' + ARROW + '</a>' +
       '</div>' +
       '<div class="foot-grid">' +
-        '<div><a href="tel:01226781344">01226 781344</a><br><a href="tel:07866255639">07866 255639</a><br>' +
+        '<div><a href="tel:01226781344">01226 781344</a><br>' +
           '<a href="mailto:manterfield1@btinternet.com">manterfield1@btinternet.com</a></div>' +
         '<div class="r"><ul>' +
           '<li><a href="https://www.instagram.com/manterfield.building" target="_blank" rel="noopener">Instagram</a></li>' +
