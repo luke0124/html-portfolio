@@ -90,7 +90,7 @@
       '<div class="foot-base">' +
         '<span>&copy; ' + new Date().getFullYear() + ' Manterfield Building &amp; Roofing Ltd.</span>' +
         '<span>Company Reg. 08779779 &middot; VAT 184 2696 75</span>' +
-        '<span>Chas &middot; FMB &middot; Velux &middot; EBC</span>' +
+        '<span class="foot-fmb"><img src="' + ROOT + 'images/fmb-logo.png" alt="Federation of Master Builders member" width="800" height="312">Chas &middot; Velux &middot; EBC</span>' +
       '</div>' +
     '</div>';
   document.body.appendChild(footer);
