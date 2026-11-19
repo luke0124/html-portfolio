@@ -16,7 +16,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.dirname(HERE)
 
 SKIP = {"manterfield-builders-supporting-england-world-cup-2018"}  # news post, not a project
-COMMERCIAL = {"linac-services-ltd", "k-m-travel", "barnsley-bowl-guttering"}
+COMMERCIAL = {"linac-services-ltd", "k-m-travel", "bransley-bowl-guttering"}
 LANDSCAPE_WORDS = ("patio", "garden", "steps", "decking", "drive", "cobbled")
 
 FILTERS = [
