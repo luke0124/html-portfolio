@@ -394,3 +394,6 @@ form.enquiry { display: grid; gap: 18px; }
 .promise .num { display: block; font-size: 15px; font-weight: 600; color: var(--purple); margin-bottom: clamp(18px, 3vw, 56px); }
 .promise h2 { font-size: clamp(28px, 3vw, 44px); letter-spacing: -0.035em; line-height: 1.04; max-width: 12ch; }
 .promise p { margin-top: 14px; font-size: clamp(17px, 1.4vw, 20px); font-weight: 500; line-height: 1.4; color: var(--ink-soft); max-width: 28ch; }
+
+.inline-link { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.inline-link:hover { color: var(--purple); }
