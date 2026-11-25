@@ -415,3 +415,8 @@ form.enquiry { display: grid; gap: 18px; }
 .rogue-body .ticks { margin-top: 12px; }
 .rogue-advice { margin-top: clamp(40px, 5vw, 64px); padding: clamp(22px, 3vw, 36px); border: 1px solid var(--lime); border-radius: var(--radius); }
 .rogue-advice h3 { margin-top: 0; padding-top: 0; border-top: 0; color: var(--lime); }
+
+/* Services: list intro */
+.list-intro { margin-top: 1.6em; font-weight: 600; }
+.svc-body .ticks li strong { font-weight: 600; }
+.svc-body a.inline-link:hover { color: var(--purple); }
