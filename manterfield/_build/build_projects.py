@@ -112,7 +112,7 @@ def main():
             print("no photos yet, skipping:", p["slug"])
             continue
         projects.append(dict(slug=p["slug"], title=p["title"].strip(), cat=category(p),
-                             paras=paragraphs(p), imgs=imgs))
+                             paras=paragraphs(p), imgs=imgs, cover_pos=p.get("cover_pos")))
 
     os.makedirs(os.path.join(SITE, "projects"), exist_ok=True)
     n = len(projects)
@@ -136,7 +136,7 @@ def main():
         <div><span>Area</span>Barnsley &amp; South Yorkshire</div>
       </div>
     </section>
-    <div class="wrap"><img class="proj-cover reveal-img" src="{base}{p["imgs"][-1]}" alt="{e(p["title"])}, finished" fetchpriority="high"></div>
+    <div class="wrap"><img class="proj-cover reveal-img" src="{base}{p["imgs"][-1]}" alt="{e(p["title"])}, finished" fetchpriority="high"{(" style=\"object-position:" + p["cover_pos"] + "\"") if p.get("cover_pos") else ""}></div>
     {about}
     <section class="wrap" style="{'' if about else 'padding-top:clamp(40px,5vw,72px)'}">
       <div class="sec-head reveal"><h2>Gallery</h2><span class="muted">Tap a photo to enlarge</span></div>
