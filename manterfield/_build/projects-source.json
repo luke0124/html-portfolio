@@ -1,5 +1,26 @@
 [
  {
+  "slug": "stone-barn-renovation",
+  "title": "Stone Barn Renovation",
+  "imgs": [
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x"
+  ],
+  "text": "",
+  "cats": [
+   "renovations"
+  ],
+  "cat": "renovations"
+ },
+ {
   "slug": "dormer-loft-conversion",
   "title": "Dormer Loft Conversion",
   "imgs": [
