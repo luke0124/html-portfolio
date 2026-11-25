@@ -85,7 +85,7 @@ def head(title, desc, root, page):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{root}css/styles.css?v=15">
+  <link rel="stylesheet" href="{root}css/styles.css?v=16">
 </head>
 <body data-page="{page}" data-root="{root}">
   <a class="skip" href="#main">Skip to content</a>

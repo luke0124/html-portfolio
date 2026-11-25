@@ -399,3 +399,8 @@ form.enquiry { display: grid; gap: 18px; }
 .inline-link:hover { color: var(--purple); }
 
 .about-banner { display: block; width: 100%; max-width: 1100px; height: auto; margin: 0 auto; border-radius: 2px; }
+
+/* About: pledge text */
+.pledge-p { font-size: 18px; line-height: 1.55; margin-top: 1em; }
+.dark .ticks li strong { color: var(--on-dark); font-weight: 600; }
+@media (min-width: 900px) { .sticky-fig { position: sticky; top: 120px; } }
