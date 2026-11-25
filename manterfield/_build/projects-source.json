@@ -41,6 +41,32 @@
   "cat": "renovations"
  },
  {
+  "slug": "kitchen-extension-roof-windows",
+  "title": "Kitchen Extension with Roof Windows",
+  "imgs": [
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x"
+  ],
+  "text": "",
+  "cats": [
+   "extensions"
+  ],
+  "cat": "extensions",
+  "cover_pos": "50% 45%"
+ },
+ {
   "slug": "dormer-loft-conversion",
   "title": "Dormer Loft Conversion",
   "imgs": [
