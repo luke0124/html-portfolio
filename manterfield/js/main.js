@@ -26,7 +26,7 @@
   header.className = 'site-header';
   header.innerHTML =
     '<a class="brand" href="' + ROOT + 'index.html" aria-label="Manterfield Building &amp; Roofing — home">' +
-      '<img src="' + ROOT + 'images/logo.png" alt="Manterfield Building &amp; Roofing" width="600" height="347"></a>' +
+      '<img src="' + ROOT + 'images/logo-round.webp" alt="Manterfield Building &amp; Roofing" width="640" height="640"></a>' +
     '<div class="header-actions">' +
       '<a class="header-call" href="tel:01226781344">01226 781344</a>' +
       '<button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>' +
@@ -38,7 +38,7 @@
   menu.setAttribute('aria-hidden', 'true');
   menu.innerHTML =
     '<div class="menu-top">' +
-      '<a class="brand" href="' + ROOT + 'index.html" aria-label="Home"><img src="' + ROOT + 'images/logo.png" alt="Manterfield Building &amp; Roofing" width="600" height="347"></a>' +
+      '<a class="brand" href="' + ROOT + 'index.html" aria-label="Home"><img src="' + ROOT + 'images/logo-round.webp" alt="Manterfield Building &amp; Roofing" width="640" height="640"></a>' +
       '<button class="menu-btn" type="button" data-close>Close</button>' +
     '</div>' +
     '<nav aria-label="Main">' + navLinks() + '</nav>' +
