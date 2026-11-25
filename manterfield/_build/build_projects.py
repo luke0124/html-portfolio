@@ -111,7 +111,7 @@ def main():
         if not imgs:
             print("no photos yet, skipping:", p["slug"])
             continue
-        projects.append(dict(slug=p["slug"], title=p["title"].strip(), cat=category(p),
+        projects.append(dict(slug=p["slug"], title=p["title"].strip(), cat=p.get("cat") or category(p),
                              paras=paragraphs(p), imgs=imgs, cover_pos=p.get("cover_pos")))
 
     os.makedirs(os.path.join(SITE, "projects"), exist_ok=True)
