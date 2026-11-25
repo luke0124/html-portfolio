@@ -122,6 +122,28 @@
   "cover_pos": "50% 100%"
  },
  {
+  "slug": "new-roof",
+  "title": "New Roof",
+  "imgs": [
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x"
+  ],
+  "text": "",
+  "cats": [
+   "roofing"
+  ],
+  "cat": "roofing",
+  "cover_pos": "50% 30%"
+ },
+ {
   "slug": "darton-extension",
   "title": "Darton Extension",
   "imgs": [
