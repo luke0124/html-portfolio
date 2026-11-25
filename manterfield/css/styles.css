@@ -420,3 +420,5 @@ form.enquiry { display: grid; gap: 18px; }
 .list-intro { margin-top: 1.6em; font-weight: 600; }
 .svc-body .ticks li strong { font-weight: 600; }
 .svc-body a.inline-link:hover { color: var(--purple); }
+
+.promise p { max-width: 36ch; }

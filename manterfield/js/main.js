@@ -82,7 +82,7 @@
         '<div class="r"><ul>' +
           '<li><a href="https://www.instagram.com/manterfield.building" target="_blank" rel="noopener">Instagram</a></li>' +
           '<li><a href="https://www.facebook.com/profile.php?id=61560415476579" target="_blank" rel="noopener">Facebook</a></li>' +
-          '<li><a href="https://www.google.com/search?q=manterfield+builders" target="_blank" rel="noopener">Google Reviews</a></li>' +
+          '<li><a href="https://www.google.com/maps?cid=11234015266589093734" target="_blank" rel="noopener">Google Reviews</a></li>' +
         '</ul></div>' +
         '<div><ul>' + links.map(function (l) { return '<li><a href="' + ROOT + l[0] + '">' + l[1] + '</a></li>'; }).join('') + '</ul></div>' +
         '<div class="r end">259a Pontefract Road<br>Cudworth<br>Barnsley, South Yorkshire<br>S72 8AQ</div>' +
