@@ -1,5 +1,30 @@
 [
  {
+  "slug": "kitchen-extension",
+  "title": "Kitchen Extension",
+  "imgs": [
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x",
+   "x"
+  ],
+  "text": "",
+  "cats": [
+   "extensions"
+  ],
+  "cat": "extensions"
+ },
+ {
   "slug": "renovation-and-re-roof",
   "title": "Renovation and Re-roof",
   "imgs": [
