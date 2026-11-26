@@ -1,3 +1,54 @@
+# Manterfield Building & Roofing - redirects from the old WordPress site
+# Anyone using an old address (Google results, bookmarks, Facebook posts, other
+# websites) is sent permanently (301) to the matching new page.
+# Upload this file to public_html next to index.html.
+
+# Never show a bare list of files if someone visits a folder such as /images/
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Old WordPress entry point
+  RewriteRule ^index\.php$ / [R=301,L]
+  RewriteRule ^home(/.*)?$ / [R=301,L]
+
+  # Main pages
+  RewriteRule ^about-us/?$ /about.html [R=301,L]
+  RewriteRule ^contact-us/?$ /contact.html [R=301,L]
+  RewriteRule ^testimonials(/page/[0-9]+)?/?$ /testimonials.html [R=301,L]
+  RewriteRule ^privacy-policy/?$ /privacy-policy.html [R=301,L]
+  RewriteRule ^terms-conditions/?$ /terms-conditions.html [R=301,L]
+
+  # Services (NE keeps the # so the browser jumps to the right section)
+  RewriteRule ^services/?$ /services.html [R=301,L]
+  RewriteRule ^services/building/?$ /services.html#building [R=301,NE,L]
+  RewriteRule ^services/extensions/?$ /services.html#extensions [R=301,NE,L]
+  RewriteRule ^services/roofing/?$ /services.html#roofing [R=301,NE,L]
+  RewriteRule ^services/storm-damage/?$ /services.html#roofing [R=301,NE,L]
+  RewriteRule ^services/renovations/?$ /services.html#renovations [R=301,NE,L]
+  RewriteRule ^services/loft-conversions/?$ /services.html#loft-conversions [R=301,NE,L]
+  RewriteRule ^services/commercial/?$ /services.html#commercial [R=301,NE,L]
+  RewriteRule ^services/landscaping/?$ /services.html#landscaping [R=301,NE,L]
+  RewriteRule ^services/(cellarbasement-conversions|tips-advice)/?$ /services.html [R=301,L]
+
+  # Project gallery lists (all, commercial, extensions, roofing... and their /page/2/ etc.)
+  RewriteRule ^project-area(/.*)?$ /projects.html [R=301,L]
+
+  # Individual projects keep the same name: /projects/darton-extension/ -> /projects/darton-extension.html
+  RewriteRule ^projects/?$ /projects.html [R=301,L]
+  RewriteCond %{DOCUMENT_ROOT}/projects/$1.html -f
+  RewriteRule ^projects/([A-Za-z0-9_-]+)/?$ /projects/$1.html [R=301,L]
+  # ...and any old project that no longer exists goes to the project list
+  RewriteRule ^projects/[A-Za-z0-9_-]+/?$ /projects.html [R=301,L]
+
+  # Old news / event posts
+  RewriteRule ^certificate-from-fmb-for-high-quality-standard(-2)?/?$ /about.html [R=301,L]
+  RewriteRule ^mr-simmons-re-roof/?$ /testimonials.html [R=301,L]
+  RewriteRule ^boxing-match-barnsley-metrodome-151114/?$ / [R=301,L]
+</IfModule>
+
 # Manterfield Building & Roofing - browser caching (Expires headers)
 # Upload this file to public_html next to index.html.
 # Needs Apache mod_expires (and mod_headers for Cache-Control); both are
