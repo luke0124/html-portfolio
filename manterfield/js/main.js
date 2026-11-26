@@ -50,6 +50,9 @@
 
   document.body.insertBefore(menu, document.body.firstChild);
   document.body.insertBefore(header, document.body.firstChild);
+  // Keep the skip link inside the page's banner landmark
+  var skipLink = document.querySelector('a.skip');
+  if (skipLink) header.insertBefore(skipLink, header.firstChild);
 
   var openBtn = header.querySelector('.menu-btn');
   var closeBtn = menu.querySelector('[data-close]');
@@ -103,15 +106,9 @@
   /* ---------- Hero video ---------- */
   var heroVideo = document.querySelector('video.hero-media');
   if (heroVideo) {
-    // Larger screens get the 1080p file; phones keep the 720p <source> from the HTML.
-    var big = window.innerWidth >= 900 && window.innerWidth * (window.devicePixelRatio || 1) > 1280;
-    if (big) {
-      var t = heroVideo.currentTime;
-      heroVideo.querySelector('source').src = heroVideo.getAttribute('data-src-large');
-      heroVideo.load();
-      if (t) heroVideo.currentTime = t;
-    }
     var toggle = document.querySelector('.hero-toggle');
+    var conn = navigator.connection || {};
+    var dataSaver = conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
     function setLabel() {
       var paused = heroVideo.paused;
       toggle.textContent = paused ? 'Play' : 'Pause';
@@ -121,10 +118,18 @@
       var pr = heroVideo.play();
       if (pr && pr.catch) pr.catch(function () { setLabel(); });
     }
-    heroVideo.addEventListener('play', setLabel);
-    heroVideo.addEventListener('pause', setLabel);
-    toggle.addEventListener('click', function () { if (heroVideo.paused) tryPlay(); else heroVideo.pause(); });
-    tryPlay();
+    if (dataSaver) {
+      // Visitor asked to save data: keep the still photo, download no video.
+      toggle.hidden = true;
+    } else {
+      // Choose ONE file up front (1080p for large screens, 720p otherwise) so only one is downloaded.
+      var big = window.innerWidth >= 900 && window.innerWidth * (window.devicePixelRatio || 1) > 1280;
+      heroVideo.src = heroVideo.getAttribute(big ? 'data-src-large' : 'data-src-small');
+      heroVideo.addEventListener('play', setLabel);
+      heroVideo.addEventListener('pause', setLabel);
+      toggle.addEventListener('click', function () { if (heroVideo.paused) tryPlay(); else heroVideo.pause(); });
+      tryPlay();
+    }
   }
 
   /* ---------- Header state on scroll ---------- */

@@ -10,6 +10,7 @@
   --on-dark-soft: #b8b2c0;
   --purple: #4a1884;
   --lime: #8eee66;
+  --green-deep: #2a7511; /* readable green (5.1:1 on the page background) for small text and icons */
   --line: rgba(31, 26, 38, .16);
   --line-dark: rgba(243, 241, 236, .22);
   --gutter: clamp(16px, 2.6vw, 40px);
@@ -37,7 +38,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 h1, h2, h3, h4, p { margin: 0; }
 h1, h2, h3 { font-weight: 600; letter-spacing: -0.03em; line-height: 1.05; }
 ::selection { background: var(--lime); color: var(--ink); }
-:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; box-shadow: 0 0 0 2px var(--lime); }
+.dark :focus-visible, .menu :focus-visible, .lightbox :focus-visible, .hero :focus-visible, .site-header :focus-visible { outline-color: #fff; }
 
 .wrap { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
 .eyebrow { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
@@ -174,8 +176,8 @@ section { position: relative; }
 .services { list-style: none; margin: 0; padding: 0; }
 .services li { border-bottom: 1px solid var(--line); }
 .services a { position: relative; display: grid; grid-template-columns: 48px 1fr auto; align-items: center; gap: 16px; padding: 20px 0; font-size: clamp(24px, 3.2vw, 44px); font-weight: 600; letter-spacing: -0.035em; transition: padding .35s var(--ease), color .2s; }
-.services a .num { font-size: 15px; font-weight: 600; letter-spacing: 0; color: var(--lime); }
-.services a .arrow { width: 34px; height: 14px; color: var(--lime); transition: transform .3s var(--ease); }
+.services a .num { font-size: 15px; font-weight: 600; letter-spacing: 0; color: var(--green-deep); }
+.services a .arrow { width: 34px; height: 14px; color: var(--green-deep); transition: transform .3s var(--ease); }
 .services a:hover { color: var(--purple); padding-left: 10px; }
 .services a:hover .arrow { transform: translateX(4px); }
 
@@ -445,3 +447,5 @@ form.enquiry { display: grid; gap: 18px; }
 .legal li { margin-top: .5em; padding-left: .2em; }
 .legal li::marker { color: var(--purple); }
 .legal strong { font-weight: 600; }
+
+.proj-hero .crumb a { text-decoration: underline; text-underline-offset: 3px; }

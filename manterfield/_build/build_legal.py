@@ -22,7 +22,7 @@ HEAD = '''<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=27">
+  <link rel="stylesheet" href="css/styles.css?v=28">
 </head>
 <body data-page="legal">
   <a class="skip" href="#main">Skip to content</a>
@@ -40,7 +40,7 @@ HEAD = '''<!DOCTYPE html>
 TAIL = '''      </div></div>
     </section>
   </main>
-  <script src="js/main.js?v=12"></script>
+  <script src="js/main.js?v=13"></script>
 </body>
 </html>
 '''
@@ -175,3 +175,8 @@ page("terms-conditions.html", "Terms & Conditions", "Terms &amp; Conditions",
 page("privacy-policy.html", "Privacy Policy", "Privacy Policy",
      "How Manterfield Building & Roofing collects and uses your personal information.", PRIVACY)
 print("legal pages written")
+
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import seo
+seo.apply()

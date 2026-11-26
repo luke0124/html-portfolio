@@ -48,3 +48,11 @@
     Header set Cache-Control "public, max-age=3600"
   </FilesMatch>
 </IfModule>
+
+# Compression: send text files (pages, styles, scripts) gzip-compressed, about 70% smaller.
+# Photos and video are already compressed, so they are left alone.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/xml
+  AddOutputFilterByType DEFLATE application/javascript text/javascript application/json
+  AddOutputFilterByType DEFLATE application/ld+json image/svg+xml
+</IfModule>

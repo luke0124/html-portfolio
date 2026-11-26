@@ -11,9 +11,16 @@ import html
 import json
 import os
 import re
+import sys
+from multiprocessing import Pool
+
+from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.dirname(HERE)
+sys.path.insert(0, HERE)
+THUMB_SIZE = 720          # long side in px, for the projects grid and gallery tiles
+TITLE_LIMIT = 60          # Google cuts page titles off at roughly this many characters
 
 SKIP = {"manterfield-builders-supporting-england-world-cup-2018"}  # news post, not a project
 COMMERCIAL = {"linac-services-ltd", "k-m-travel", "bransley-bowl-guttering"}
@@ -29,6 +36,10 @@ FILTERS = [
     ("commercial", "Commercial", "Commercial"),
 ]
 LABEL = {k: single for k, _, single in FILTERS}
+
+# Projects shown as the four featured cards on the home page (by slug, in order)
+HOME_FEATURED = ["two-storey-structural-transformation", "stone-barn-renovation", "kitchen-extension", "new-roof"]
+HOME_CARD_SIZE = 1000
 
 ARROW = ('<svg viewBox="0 0 34 14" fill="none" aria-hidden="true">'
          '<path d="M0 7h32M26 1l6 6-6 6" stroke="currentColor" stroke-width="1.5"/></svg>')
@@ -67,6 +78,85 @@ def paragraphs(p):
     return paras
 
 
+def trim(text, limit=155):
+    """Cut text to at most `limit` characters at a word boundary (meta descriptions)."""
+    text = re.sub(r"\s+", " ", text).strip()
+    if len(text) <= limit:
+        return text
+    return text[:limit].rsplit(" ", 1)[0].rstrip(" ,;:-\u2013") + "\u2026"
+
+
+def page_title(t):
+    """'<name> | Manterfield Building & Roofing', shortened so Google doesn't cut it off."""
+    full = f"{t} | Manterfield Building & Roofing"
+    if len(full) <= TITLE_LIMIT:
+        return full
+    short = f"{t} | Manterfield"
+    if len(short) <= TITLE_LIMIT:
+        return short
+    room = TITLE_LIMIT - len(" | Manterfield") - 1
+    return t[:room].rsplit(" ", 1)[0].rstrip(" ,;:-\u2013&") + "\u2026 | Manterfield"
+
+
+def _thumb_job(job):
+    src, dst = job
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    with Image.open(src) as im:
+        im = im.convert("RGB")
+        im.thumbnail((THUMB_SIZE, THUMB_SIZE), Image.LANCZOS)
+        im.save(dst, "JPEG", quality=66, optimize=True, progressive=True)
+
+
+def make_thumbs(projects):
+    """Small copies of every project photo (images/projects/<slug>/thumbs/NNN.jpg).
+    Only (re)built when missing or older than the full-size photo."""
+    jobs = []
+    for p in projects:
+        folder = os.path.join(SITE, "images", "projects", p["slug"])
+        for f in p["imgs"]:
+            src, dst = os.path.join(folder, f), os.path.join(folder, "thumbs", f)
+            if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
+                jobs.append((src, dst))
+        if p.get("card_img"):
+            src = os.path.join(SITE, p["card_img"])
+            dst = os.path.join(SITE, "images", "thumbs", os.path.basename(p["card_img"]))
+            if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
+                jobs.append((src, dst))
+    if jobs:
+        with Pool(min(8, os.cpu_count() or 2)) as pool:
+            pool.map(_thumb_job, jobs, chunksize=8)
+    print(f"thumbnails: {len(jobs)} made")
+
+
+def update_home(projects):
+    """Rebuild the featured cards on index.html (between the featured markers) from
+    each project's cover photo, so they can never point at the wrong picture."""
+    by = {p["slug"]: p for p in projects}
+    out_dir = os.path.join(SITE, "images", "home-cards")
+    os.makedirs(out_dir, exist_ok=True)
+    cards = []
+    for i, slug in enumerate(HOME_FEATURED, 1):
+        p = by[slug]
+        src = os.path.join(SITE, p["card_img"]) if p.get("card_img") else os.path.join(SITE, "images", "projects", slug, p["imgs"][-1])
+        dst = os.path.join(out_dir, slug + ".jpg")
+        if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
+            with Image.open(src) as im:
+                im = im.convert("RGB")
+                im.thumbnail((HOME_CARD_SIZE, HOME_CARD_SIZE), Image.LANCZOS)
+                im.save(dst, "JPEG", quality=72, optimize=True, progressive=True)
+        pos = p.get("card_pos") or p.get("cover_pos")
+        style = f' style="object-position:{pos}"' if pos else ""
+        cards.append(f'''          <a class="project reveal" href="projects/{slug}.html">
+            <div class="ph"><img src="images/home-cards/{slug}.jpg" alt="{e(p["title"])}" loading="lazy"{style}></div>
+            <div class="project-meta"><span>{i:02d}</span><span>{e(p["title"])}</span><span class="cat">{e(LABEL[p["cat"]])}</span></div>
+          </a>''')
+    path = os.path.join(SITE, "index.html")
+    html_ = open(path, encoding="utf-8").read()
+    new, n = re.subn(r"<!-- featured:start -->.*?<!-- featured:end -->", lambda m: "<!-- featured:start -->\n" + "\n".join(cards) + "\n          <!-- featured:end -->", html_, flags=re.S)
+    assert n == 1, "featured markers missing in index.html"
+    open(path, "w", encoding="utf-8").write(new)
+
+
 def photos(slug, n):
     folder = os.path.join(SITE, "images", "projects", slug)
     return [f"{i:03d}.jpg" for i in range(1, n + 1) if os.path.exists(os.path.join(folder, f"{i:03d}.jpg"))]
@@ -78,14 +168,14 @@ def head(title, desc, root, page):
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{e(title)} | Manterfield Building &amp; Roofing</title>
+  <title>{e(page_title(title))}</title>
   <meta name="description" content="{e(desc)}">
   <meta name="theme-color" content="#221c29">
   <link rel="icon" href="{root}images/favicon-round.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{root}css/styles.css?v=27">
+  <link rel="stylesheet" href="{root}css/styles.css?v=28">
 </head>
 <body data-page="{page}" data-root="{root}">
   <a class="skip" href="#main">Skip to content</a>
@@ -95,7 +185,7 @@ def head(title, desc, root, page):
 
 def tail(root):
     return f'''  </main>
-  <script src="{root}js/main.js?v=12"></script>
+  <script src="{root}js/main.js?v=13"></script>
 </body>
 </html>
 '''
@@ -112,20 +202,22 @@ def main():
             print("no photos yet, skipping:", p["slug"])
             continue
         projects.append(dict(slug=p["slug"], title=p["title"].strip(), cat=p.get("cat") or category(p),
-                             paras=paragraphs(p), imgs=imgs, cover_pos=p.get("cover_pos"), card_img=p.get("card_img"), card_pos=p.get("card_pos")))
+                             paras=paragraphs(p), imgs=imgs, cover_pos=p.get("cover_pos"), card_img=p.get("card_img"), card_pos=p.get("card_pos"),
+                             seo_title=p.get("seo_title")))
+    make_thumbs(projects)
 
     os.makedirs(os.path.join(SITE, "projects"), exist_ok=True)
     n = len(projects)
     for i, p in enumerate(projects):
         prev_p, next_p = projects[i - 1], projects[(i + 1) % n]
         base = f"../images/projects/{p['slug']}/"
-        desc = (p["paras"][0][:150] if p["paras"] else f"{p['title']}: {LABEL[p['cat']].lower()} project by Manterfield Building & Roofing, Barnsley.")
+        desc = trim(p["paras"][0] if p["paras"] else f"{p['title']}: {LABEL[p['cat']].lower()} project by Manterfield Building & Roofing, Barnsley.")
         about = ""
         if p["paras"]:
             about = ('<section class="wrap proj-about">\n      <h2 class="reveal">About the project</h2>\n'
                      '      <div class="txt reveal">' + "".join(f"<p>{e(x)}</p>" for x in p["paras"]) + "</div>\n    </section>")
         gallery = "\n".join(
-            f'        <a href="{base}{f}" data-lightbox><img src="{base}{f}" alt="{e(p["title"])}, photo {j + 1}" loading="lazy"></a>'
+            f'        <a href="{base}{f}" data-lightbox><img src="{base}thumbs/{f}" alt="{e(p["title"])}, photo {j + 1}" loading="lazy"></a>'
             for j, f in enumerate(p["imgs"]))
         body = f'''    <section class="wrap proj-hero">
       <span class="crumb reveal"><a href="../projects.html">Projects</a> / {e(LABEL[p["cat"]])}</span>
@@ -155,7 +247,7 @@ def main():
     </section>
 '''
         with open(os.path.join(SITE, "projects", p["slug"] + ".html"), "w") as f:
-            f.write(head(p["title"], desc, "../", "projects") + body + tail("../"))
+            f.write(head(p["seo_title"] or p["title"], desc, "../", "projects") + body + tail("../"))
 
     # Remove pages for projects that no longer exist
     keep = {p["slug"] + ".html" for p in projects}
@@ -170,7 +262,7 @@ def main():
          for k, plural, _ in FILTERS if counts[k]])
     cards = "\n".join(
         f'''          <a class="project reveal" data-cat="{p["cat"]}" href="projects/{p["slug"]}.html">
-            <div class="ph"><img src="{p["card_img"] or ("images/projects/" + p["slug"] + "/" + p["imgs"][-1])}" alt="{e(p["title"])}" loading="lazy"{(" style=\"object-position:" + p["card_pos"] + "\"") if p.get("card_pos") else ""}></div>
+            <div class="ph"><img src="{("images/thumbs/" + os.path.basename(p["card_img"])) if p["card_img"] else ("images/projects/" + p["slug"] + "/thumbs/" + p["imgs"][-1])}" alt="{e(p["title"])}" loading="lazy"{(" style=\"object-position:" + p["card_pos"] + "\"") if p.get("card_pos") else ""}></div>
             <div class="project-meta"><span>{i + 1:02d}</span><span>{e(p["title"])}</span><span class="cat">{e(LABEL[p["cat"]])}</span></div>
           </a>''' for i, p in enumerate(projects))
     listing = f'''    <section class="page-hero">
@@ -203,7 +295,10 @@ def main():
     with open(os.path.join(SITE, "projects.html"), "w") as f:
         f.write(head("Projects", "Extensions, re-roofs, renovations and loft conversions across Barnsley, Wakefield and South Yorkshire.", "", "projects")
                 + listing + tail(""))
+    update_home(projects)
     print(f"{n} project pages written;", counts)
+    import seo
+    seo.apply()
 
 
 if __name__ == "__main__":
