@@ -1,0 +1,50 @@
+# Manterfield Building & Roofing - browser caching (Expires headers)
+# Upload this file to public_html next to index.html.
+# Needs Apache mod_expires (and mod_headers for Cache-Control); both are
+# standard on cPanel hosting. Each block is skipped safely if a module is missing.
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Anything not listed below: re-check after 1 hour
+  ExpiresDefault "access plus 1 hour"
+
+  # Pages: short, so text edits show up quickly
+  ExpiresByType text/html "access plus 1 hour"
+
+  # Styles and scripts: the pages link them as css/styles.css?v=NN and
+  # js/main.js?v=NN, so a new version number forces a fresh download
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+
+  # Photos, logo and icons
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/webp "access plus 1 month"
+  ExpiresByType image/gif "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/x-icon "access plus 1 month"
+  ExpiresByType image/vnd.microsoft.icon "access plus 1 month"
+
+  # Hero video
+  ExpiresByType video/mp4 "access plus 1 month"
+
+  # Fonts (if ever self-hosted)
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>
+
+# Modern equivalent of Expires: Cache-Control, so every browser and CDN agrees
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|jpe?g|png|webp|gif|svg|ico|mp4)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  <FilesMatch "\.(woff2?)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+</IfModule>
