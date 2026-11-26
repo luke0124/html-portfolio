@@ -44,7 +44,8 @@
   "cats": [
    "renovations"
   ],
-  "cat": "renovations"
+  "cat": "renovations",
+  "card_img": "images/stone-cottage-cleared.jpg"
  },
  {
   "slug": "kitchen-extension-roof-windows",

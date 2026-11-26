@@ -112,7 +112,7 @@ def main():
             print("no photos yet, skipping:", p["slug"])
             continue
         projects.append(dict(slug=p["slug"], title=p["title"].strip(), cat=p.get("cat") or category(p),
-                             paras=paragraphs(p), imgs=imgs, cover_pos=p.get("cover_pos")))
+                             paras=paragraphs(p), imgs=imgs, cover_pos=p.get("cover_pos"), card_img=p.get("card_img"), card_pos=p.get("card_pos")))
 
     os.makedirs(os.path.join(SITE, "projects"), exist_ok=True)
     n = len(projects)
@@ -170,7 +170,7 @@ def main():
          for k, plural, _ in FILTERS if counts[k]])
     cards = "\n".join(
         f'''          <a class="project reveal" data-cat="{p["cat"]}" href="projects/{p["slug"]}.html">
-            <div class="ph"><img src="images/projects/{p["slug"]}/{p["imgs"][-1]}" alt="{e(p["title"])}" loading="lazy"></div>
+            <div class="ph"><img src="{p["card_img"] or ("images/projects/" + p["slug"] + "/" + p["imgs"][-1])}" alt="{e(p["title"])}" loading="lazy"{(" style=\"object-position:" + p["card_pos"] + "\"") if p.get("card_pos") else ""}></div>
             <div class="project-meta"><span>{i + 1:02d}</span><span>{e(p["title"])}</span><span class="cat">{e(LABEL[p["cat"]])}</span></div>
           </a>''' for i, p in enumerate(projects))
     listing = f'''    <section class="page-hero">
