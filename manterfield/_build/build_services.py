@@ -34,6 +34,28 @@ SEO = {
 }
 
 
+def _small(bp, img):
+    """960px-wide copy of a service photo for phones (images/thumbs/svc-<name>).
+    Returns (small path, full width), both relative to the site root."""
+    src = os.path.join(bp.SITE, img)
+    dst_rel = "images/thumbs/svc-" + os.path.splitext(os.path.basename(img))[0] + ".jpg"
+    dst = os.path.join(bp.SITE, dst_rel)
+    with bp.Image.open(src) as im:
+        full_w = im.width
+        if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            small = im.convert("RGB")
+            if small.width > bp.COVER_WIDTH:
+                small = small.resize((bp.COVER_WIDTH, round(small.height * bp.COVER_WIDTH / small.width)), bp.Image.LANCZOS)
+            small.save(dst, "JPEG", quality=70, optimize=True, progressive=True)
+    return dst_rel, max(full_w, bp.COVER_WIDTH + 1)
+
+
+def _srcset(bp, img, root, sizes):
+    small, full_w = _small(bp, img)
+    return f'srcset="{root}{small} {bp.COVER_WIDTH}w, {root}{img} {full_w}w" sizes="{sizes}"'
+
+
 def _relink(fragment, root):
     """Make relative links in a copied fragment work from a page in a subfolder."""
     return re.sub(r'href="(?!https?:|tel:|mailto:|#|/|\.\./)([^"]+)"', lambda m: f'href="{root}{m.group(1)}"', fragment)
@@ -83,7 +105,7 @@ def build(bp, projects):
         <div class="svc-actions reveal"><a class="btn" href="../contact.html">Get a free quote{arrow}</a><a class="btn lime" href="tel:01226781344">01226 781344</a></div>
       </div>
     </section>
-    <div class="wrap"><img class="proj-cover reveal-img" src="../{s["img"]}" alt="{html.escape(s["alt"])}" fetchpriority="high"{img_style}></div>
+    <div class="wrap"><img class="proj-cover reveal-img" src="../{s["img"]}" {_srcset(bp, s["img"], "../", "(max-width: 900px) calc(100vw - 32px), 1280px")} alt="{html.escape(s["alt"])}" fetchpriority="high"{img_style}></div>
     <section class="wrap proj-about">
       <h2 class="reveal">{html.escape(s["name"])} by Manterfield</h2>
       <div class="txt svc-body reveal">
@@ -127,7 +149,7 @@ def build(bp, projects):
     for s in services:
         img_style = f' style="{s["img_style"]}"' if s["img_style"] else ""
         arts.append(f'''      <article class="svc" id="{s["id"]}">
-        <div class="svc-head reveal"><span class="num">{s["num"]}</span><h2><a href="services/{s["id"]}.html">{html.escape(s["name"])}</a></h2><img src="{s["img"]}" alt="{html.escape(s["alt"])}" loading="lazy"{img_style}></div>
+        <div class="svc-head reveal"><span class="num">{s["num"]}</span><h2><a href="services/{s["id"]}.html">{html.escape(s["name"])}</a></h2><img src="{s["img"]}" {_srcset(bp, s["img"], "", "(max-width: 960px) calc(100vw - 32px), 40vw")} alt="{html.escape(s["alt"])}" loading="lazy"{img_style}></div>
         <div class="svc-body reveal">
           {s["lead_html"]}
           <a class="link-row" href="services/{s["id"]}.html">More about {html.escape(s["name"].lower())} in Barnsley{arrow}</a>
