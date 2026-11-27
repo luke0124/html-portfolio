@@ -26,7 +26,8 @@
    "extensions"
   ],
   "cat": "extensions",
-  "cover_pos": "50% 47%"
+  "cover_pos": "50% 47%",
+  "area": "Wakefield"
  },
  {
   "slug": "stone-barn-renovation",
@@ -174,7 +175,8 @@
   "cats": [
    "extensions"
   ],
-  "cover_pos": "50% 100%"
+  "cover_pos": "50% 100%",
+  "area": "Wakefield"
  },
  {
   "slug": "new-roof",
@@ -261,7 +263,8 @@
   "cats": [
    "commercial-projects",
    "extensions"
-  ]
+  ],
+  "area": "Wakefield"
  },
  {
   "slug": "mrs-lewis-large-re-roof",
