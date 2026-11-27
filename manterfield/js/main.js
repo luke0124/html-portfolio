@@ -107,6 +107,9 @@
   var heroVideo = document.querySelector('video.hero-media');
   if (heroVideo) {
     var toggle = document.querySelector('.hero-toggle');
+    // Phones and narrow screens get the portrait (9:16) video and its portrait still photo
+    var isPhone = window.matchMedia('(max-width: 899px)').matches;
+    if (isPhone) heroVideo.poster = heroVideo.getAttribute('data-poster-phone');
     var conn = navigator.connection || {};
     var dataSaver = conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '');
     function setLabel() {
@@ -124,7 +127,7 @@
     } else {
       // Choose ONE file up front (1080p for large screens, 720p otherwise) so only one is downloaded.
       var big = window.innerWidth >= 900 && window.innerWidth * (window.devicePixelRatio || 1) > 1280;
-      heroVideo.src = heroVideo.getAttribute(big ? 'data-src-large' : 'data-src-small');
+      heroVideo.src = heroVideo.getAttribute(isPhone ? 'data-src-phone' : (big ? 'data-src-large' : 'data-src-small'));
       heroVideo.addEventListener('play', setLabel);
       heroVideo.addEventListener('pause', setLabel);
       toggle.addEventListener('click', function () { if (heroVideo.paused) tryPlay(); else heroVideo.pause(); });

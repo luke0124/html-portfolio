@@ -40,7 +40,7 @@ HEAD = '''<!DOCTYPE html>
 TAIL = '''      </div></div>
     </section>
   </main>
-  <script src="js/main.js?v=14"></script>
+  <script src="js/main.js?v=15"></script>
 </body>
 </html>
 '''
