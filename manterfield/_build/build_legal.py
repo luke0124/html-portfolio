@@ -22,7 +22,7 @@ HEAD = '''<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=32">
+  <link rel="stylesheet" href="css/styles.css?v=33">
 </head>
 <body data-page="legal">
   <a class="skip" href="#main">Skip to content</a>
@@ -40,7 +40,7 @@ HEAD = '''<!DOCTYPE html>
 TAIL = '''      </div></div>
     </section>
   </main>
-  <script src="js/main.js?v=17"></script>
+  <script src="js/main.js?v=18"></script>
 </body>
 </html>
 '''

@@ -30,7 +30,13 @@ SOCIAL = [("https://www.instagram.com/manterfield.building", "Instagram"),
           ("https://www.google.com/maps?cid=11234015266589093734", "Google Reviews"),
           ("https://www.fmb.org.uk/builder/manterfield-building-roofing-limited.html", "Federation of Master Builders")]
 
-BLOCK = re.compile(r"[ \t]*<!-- site-(header|footer):start -->.*?<!-- site-\1:end -->\n?", re.S)
+BLOCK = re.compile(r"[ \t]*<!-- site-(head|header|footer):start -->.*?<!-- site-\1:end -->\n?", re.S)
+# Marks the page as "script running" so the fade-in may hide content; if the main script
+# hasn't started within 3 seconds (failed or slow to load) everything is shown anyway.
+HEAD = ("  <!-- site-head:start -->\n"
+        "  <script>document.documentElement.classList.add('js');"
+        "setTimeout(function(){if(!window.__mfReady)document.documentElement.classList.remove('js')},3000)</script>\n"
+        "  <!-- site-head:end -->\n")
 SKIP = re.compile(r'[ \t]*<a class="skip" href="#main">Skip to content</a>\n?')
 
 
@@ -116,6 +122,7 @@ def apply():
         root = (re.search(r'data-root="([^"]*)"', body.group(0)) or [None, ""])[1]
         s = BLOCK.sub("", s)
         s = SKIP.sub("", s)
+        s = s.replace("</head>", HEAD + "</head>", 1)
         body = re.search(r"<body[^>]*>\n?", s)
         s = s[:body.end()] + header(root, page) + s[body.end():]
         script = re.search(r'[ \t]*<script src="[^"]*js/main\.js', s)

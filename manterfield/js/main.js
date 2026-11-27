@@ -1,5 +1,6 @@
 (function () {
   'use strict';
+  window.__mfReady = true;  // tells the page's safety check that the script is running
 
   var ARROW = '<svg viewBox="0 0 34 14" fill="none" aria-hidden="true"><path d="M0 7h32M26 1l6 6-6 6" stroke="currentColor" stroke-width="1.5"/></svg>';
   /* ---------- Header + menu (written into each page's HTML by _build/chrome.py) ---------- */
@@ -114,24 +115,49 @@
     go(0);
   });
 
-  /* ---------- Project filter ---------- */
+  /* ---------- Project filter + "Show more" (24 at a time) ---------- */
   var filter = document.querySelector('[data-filter]');
-  if (filter) {
-    var fromHash = location.hash.replace('#', '');
-    if (fromHash) {
-      var hb = filter.querySelector('button[data-f="' + fromHash + '"]');
-      if (hb) setTimeout(function () { hb.click(); }, 0);
-    }
-    var items = document.querySelectorAll('.grid .project');
+  var grid = document.querySelector('.grid');
+  if (filter && grid) {
+    var PAGE = 24, limit = PAGE, current = 'all';
+    var items = Array.prototype.slice.call(grid.querySelectorAll('.project'));
+    var moreWrap = document.createElement('div');
+    moreWrap.className = 'more-wrap';
+    moreWrap.innerHTML = '<button type="button" class="btn more-btn"></button>';
+    grid.parentNode.insertBefore(moreWrap, grid.nextSibling);
+    var moreBtn = moreWrap.querySelector('button');
+    var render = function () {
+      var total = 0;
+      items.forEach(function (it) {
+        var match = current === 'all' || it.getAttribute('data-cat') === current;
+        it.classList.toggle('is-hidden', !match);
+        if (match) total++;
+        it.classList.toggle('is-more', match && total > limit);
+      });
+      var left = total - Math.min(total, limit);
+      moreWrap.hidden = left <= 0;
+      moreBtn.textContent = 'Show more projects (' + left + ' more)';
+    };
+    moreBtn.addEventListener('click', function () {
+      var firstNew = items.filter(function (it) { return it.classList.contains('is-more'); })[0];
+      limit += PAGE;
+      render();
+      if (firstNew) firstNew.focus({ preventScroll: true });
+    });
     filter.addEventListener('click', function (e) {
       var b = e.target.closest('button');
       if (!b) return;
       filter.querySelectorAll('button').forEach(function (x) { x.classList.toggle('is-active', x === b); x.setAttribute('aria-pressed', String(x === b)); });
-      var f = b.getAttribute('data-f');
-      items.forEach(function (it) {
-        it.classList.toggle('is-hidden', f !== 'all' && it.getAttribute('data-cat') !== f);
-      });
+      current = b.getAttribute('data-f');
+      limit = PAGE;
+      render();
     });
+    render();
+    var fromHash = location.hash.replace('#', '');
+    if (fromHash) {
+      var hb = filter.querySelector('button[data-f="' + fromHash + '"]');
+      if (hb) hb.click();
+    }
   }
 
   /* ---------- Enquiry form: sends straight to the office; falls back to the visitor's email app ---------- */

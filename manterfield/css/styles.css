@@ -197,13 +197,21 @@ section { position: relative; }
 .filter button { border: 1px solid var(--line); background: transparent; padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: 15px; transition: background .2s, color .2s, border-color .2s; }
 .filter button:hover { border-color: var(--ink); }
 .filter button.is-active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.grid { display: grid; gap: clamp(28px, 3vw, 40px) clamp(16px, 2vw, 28px); grid-template-columns: 1fr; }
+.grid { display: grid; gap: clamp(22px, 3vw, 40px) clamp(12px, 2vw, 28px); grid-template-columns: 1fr 1fr; }
 @media (min-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1024px) { .grid { grid-template-columns: 1fr 1fr 1fr; } }
 .grid .project img { aspect-ratio: 4 / 5; }
 .grid .project-meta { font-size: 18px; grid-template-columns: 40px 1fr auto; }
 .grid .project-meta .cat { font-size: 15px; color: var(--ink-soft); }
-.grid .project.is-hidden { display: none; }
+.grid .project.is-hidden, .grid .project.is-more { display: none; }
+/* Phones: two smaller cards per row, title over category */
+@media (max-width: 639px) {
+  .grid .project-meta { grid-template-columns: 1fr; gap: 3px; font-size: 15px; line-height: 1.25; padding: 10px 0 12px; }
+  .grid .project-meta > span:first-child { display: none; }
+  .grid .project-meta .cat { text-align: left; font-size: 13px; }
+}
+.more-wrap { display: flex; justify-content: center; margin-top: clamp(32px, 4vw, 48px); }
+.more-wrap[hidden] { display: none; }
 
 /* Why choose us */
 .why { display: grid; gap: 0; grid-template-columns: 1fr; border-top: 1px solid var(--line-dark); }
@@ -324,10 +332,12 @@ form.enquiry { display: grid; gap: 18px; }
 .foot-base a:hover { color: var(--ink); }
 
 /* ---------- Reveal on scroll ---------- */
-.reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
-.reveal.in { opacity: 1; transform: none; }
-.reveal-img { clip-path: inset(8% 0 0 0); transition: clip-path 1.2s var(--ease); }
-.reveal-img.in { clip-path: inset(0 0 0 0); }
+/* Content is only hidden for the fade-in once the script is running (html.js), so it
+   can never get stuck invisible if JavaScript fails to load */
+.reveal { transition: opacity .9s var(--ease), transform .9s var(--ease); }
+.js .reveal:not(.in) { opacity: 0; transform: translateY(28px); }
+.reveal-img { transition: clip-path 1.2s var(--ease); }
+.js .reveal-img:not(.in) { clip-path: inset(8% 0 0 0); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal { opacity: 1; transform: none; }
