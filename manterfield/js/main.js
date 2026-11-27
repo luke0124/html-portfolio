@@ -201,18 +201,56 @@
     });
   }
 
-  /* ---------- Enquiry form (opens the visitor's email app) ---------- */
+  /* ---------- Enquiry form: sends straight to the office; falls back to the visitor's email app ---------- */
   var form = document.querySelector('form.enquiry');
   if (form) {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if (!form.reportValidity()) return;
-      var d = new FormData(form);
-      var subject = d.get('subject') || ('Project enquiry — ' + (d.get('service') || 'General'));
+    var shownAt = Date.now();
+    var okBox = form.querySelector('.form-ok');
+    var errBox = form.querySelector('.form-err');
+    var sendBtn = form.querySelector('button[type="submit"]');
+    var btnLabel = sendBtn.firstChild ? sendBtn.firstChild.textContent : 'Send enquiry';
+
+    function openEmailApp(d) {
+      var subject = d.get('subject') || ('Project enquiry \u2014 ' + (d.get('service') || 'General'));
       var body = 'Name: ' + d.get('name') + '\nEmail: ' + d.get('email') + '\nPhone: ' + (d.get('phone') || '') +
         '\nService: ' + (d.get('service') || '') + '\n\n' + d.get('message');
       window.location.href = 'mailto:manterfield1@btinternet.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-      form.querySelector('.form-ok').classList.add('show');
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      okBox.classList.remove('show');
+      errBox.classList.remove('show');
+      if (!form.reportValidity()) return;
+      var d = new FormData(form);
+      d.append('elapsed', String(Date.now() - shownAt));
+      sendBtn.disabled = true;
+      sendBtn.firstChild.textContent = 'Sending\u2026';
+      fetch(form.getAttribute('action'), { method: 'POST', body: d, headers: { 'Accept': 'application/json' } })
+        .then(function (r) {
+          return r.json().then(function (j) { return { status: r.status, body: j }; });
+        })
+        .then(function (res) {
+          if (res.body && res.body.ok) {
+            form.reset();
+            okBox.classList.add('show');
+            okBox.focus && okBox.setAttribute('tabindex', '-1');
+            okBox.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          } else {
+            errBox.textContent = (res.body && res.body.error) || 'Sorry, your message could not be sent. Please call us on 01226 781344.';
+            errBox.classList.add('show');
+          }
+        })
+        .catch(function () {
+          // The sending script isn't available here (for example a preview site): use the visitor's email app instead.
+          openEmailApp(d);
+          okBox.textContent = 'Your email app should now be open with your message ready to send.';
+          okBox.classList.add('show');
+        })
+        .then(function () {
+          sendBtn.disabled = false;
+          sendBtn.firstChild.textContent = btnLabel;
+        });
     });
   }
 

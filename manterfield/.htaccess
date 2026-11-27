@@ -107,3 +107,10 @@ Options -Indexes
   AddOutputFilterByType DEFLATE application/javascript text/javascript application/json
   AddOutputFilterByType DEFLATE application/ld+json image/svg+xml
 </IfModule>
+
+# The enquiry form script must never be cached
+<Files "send-enquiry.php">
+  <IfModule mod_expires.c>
+    ExpiresActive Off
+  </IfModule>
+</Files>

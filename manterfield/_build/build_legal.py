@@ -6,7 +6,7 @@ Edit the text below and re-run:  python3 manterfield/_build/build_legal.py
 import os
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-UPDATED = "26 November 2026"
+UPDATED = "27 November 2026"
 CO = "Manterfield Building &amp; Roofing Ltd"
 EMAIL = "manterfield1@btinternet.com"
 
@@ -22,7 +22,7 @@ HEAD = '''<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=28">
+  <link rel="stylesheet" href="css/styles.css?v=29">
 </head>
 <body data-page="legal">
   <a class="skip" href="#main">Skip to content</a>
@@ -40,7 +40,7 @@ HEAD = '''<!DOCTYPE html>
 TAIL = '''      </div></div>
     </section>
   </main>
-  <script src="js/main.js?v=13"></script>
+  <script src="js/main.js?v=14"></script>
 </body>
 </html>
 '''
@@ -106,7 +106,7 @@ PRIVACY = f'''
         </ul>
 
         <h2>3. The enquiry form on this website</h2>
-        <p>When you fill in the enquiry form and press "Send enquiry", the form opens your own email app with your message ready to send to us. Nothing is sent to us, or stored by the website, until you send that email yourself. Once we receive your email we handle it as described in this policy.</p>
+        <p>When you fill in the enquiry form and press "Send enquiry", your name, email address, phone number (if you give one), the service you are interested in and your message are emailed to us by the website's hosting server. We do not store them on the website, and we use them only to reply to you and handle your enquiry, as described in this policy. If you would rather not use the form, you can phone or email us instead.</p>
 
         <h2>4. How we use your information, and our legal reasons</h2>
         <ul>

@@ -449,3 +449,9 @@ form.enquiry { display: grid; gap: 18px; }
 .legal strong { font-weight: 600; }
 
 .proj-hero .crumb a { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Enquiry form: hidden spam trap and error message */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.form-err { display: none; padding: 16px 18px; border-radius: var(--radius); background: #fbe9e7; color: #7a1c10; font-weight: 600; }
+.form-err.show { display: block; }
+.btn:disabled { opacity: .6; cursor: progress; }
