@@ -98,13 +98,21 @@ def page_title(t):
     return t[:room].rsplit(" ", 1)[0].rstrip(" ,;:-\u2013&") + "\u2026 | Manterfield"
 
 
+COVER_WIDTH = 960          # width of the phone-sized project cover photo
+
+
 def _thumb_job(job):
-    src, dst = job
+    src, dst, mode = job
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     with Image.open(src) as im:
         im = im.convert("RGB")
-        im.thumbnail((THUMB_SIZE, THUMB_SIZE), Image.LANCZOS)
-        im.save(dst, "JPEG", quality=66, optimize=True, progressive=True)
+        if mode == "cover":
+            if im.width > COVER_WIDTH:
+                im = im.resize((COVER_WIDTH, round(im.height * COVER_WIDTH / im.width)), Image.LANCZOS)
+            im.save(dst, "JPEG", quality=70, optimize=True, progressive=True)
+        else:
+            im.thumbnail((THUMB_SIZE, THUMB_SIZE), Image.LANCZOS)
+            im.save(dst, "JPEG", quality=66, optimize=True, progressive=True)
 
 
 def make_thumbs(projects):
@@ -116,12 +124,16 @@ def make_thumbs(projects):
         for f in p["imgs"]:
             src, dst = os.path.join(folder, f), os.path.join(folder, "thumbs", f)
             if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
-                jobs.append((src, dst))
+                jobs.append((src, dst, "thumb"))
+        csrc = os.path.join(folder, p["imgs"][-1])
+        cdst = os.path.join(folder, "thumbs", "cover-%d.jpg" % COVER_WIDTH)
+        if not os.path.exists(cdst) or os.path.getmtime(cdst) < os.path.getmtime(csrc):
+            jobs.append((csrc, cdst, "cover"))
         if p.get("card_img"):
             src = os.path.join(SITE, p["card_img"])
             dst = os.path.join(SITE, "images", "thumbs", os.path.basename(p["card_img"]))
             if not os.path.exists(dst) or os.path.getmtime(dst) < os.path.getmtime(src):
-                jobs.append((src, dst))
+                jobs.append((src, dst, "thumb"))
     if jobs:
         with Pool(min(8, os.cpu_count() or 2)) as pool:
             pool.map(_thumb_job, jobs, chunksize=8)
@@ -157,6 +169,12 @@ def update_home(projects):
     open(path, "w", encoding="utf-8").write(new)
 
 
+def full_w(p):
+    """Pixel width of a project's full-size cover photo (for the srcset)."""
+    with Image.open(os.path.join(SITE, "images", "projects", p["slug"], p["imgs"][-1])) as im:
+        return max(im.width, COVER_WIDTH + 1)
+
+
 def photos(slug, n):
     folder = os.path.join(SITE, "images", "projects", slug)
     return [f"{i:03d}.jpg" for i in range(1, n + 1) if os.path.exists(os.path.join(folder, f"{i:03d}.jpg"))]
@@ -175,7 +193,7 @@ def head(title, desc, root, page):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{root}css/styles.css?v=29">
+  <link rel="stylesheet" href="{root}css/styles.css?v=30">
 </head>
 <body data-page="{page}" data-root="{root}">
   <a class="skip" href="#main">Skip to content</a>
@@ -185,7 +203,7 @@ def head(title, desc, root, page):
 
 def tail(root):
     return f'''  </main>
-  <script src="{root}js/main.js?v=15"></script>
+  <script src="{root}js/main.js?v=16"></script>
 </body>
 </html>
 '''
@@ -228,7 +246,7 @@ def main():
         <div><span>Area</span>Barnsley &amp; South Yorkshire</div>
       </div>
     </section>
-    <div class="wrap"><img class="proj-cover reveal-img" src="{base}{p["imgs"][-1]}" alt="{e(p["title"])}, finished" fetchpriority="high"{(" style=\"object-position:" + p["cover_pos"] + "\"") if p.get("cover_pos") else ""}></div>
+    <div class="wrap"><img class="proj-cover reveal-img" src="{base}{p["imgs"][-1]}" srcset="{base}thumbs/cover-{COVER_WIDTH}.jpg {COVER_WIDTH}w, {base}{p["imgs"][-1]} {full_w(p)}w" sizes="(max-width: 900px) calc(100vw - 32px), 1280px" alt="{e(p["title"])}, finished" fetchpriority="high"{(" style=\"object-position:" + p["cover_pos"] + "\"") if p.get("cover_pos") else ""}></div>
     {about}
     <section class="wrap" style="{'' if about else 'padding-top:clamp(40px,5vw,72px)'}">
       <div class="sec-head reveal"><h2>Gallery</h2><span class="muted">Tap a photo to enlarge</span></div>
