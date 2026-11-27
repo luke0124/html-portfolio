@@ -87,7 +87,7 @@ def footer(root):
         <a class="link-row" href="{root}contact.html">Call for a FREE home consultation &amp; quotation{ARROW}</a>
       </div>
       <div class="foot-grid">
-        <div><a href="tel:01226781344">01226 781344</a><br><a href="tel:07841204807">07841 204807</a><br><a href="mailto:manterfield1@btinternet.com">manterfield1@btinternet.com</a></div>
+        <div><a href="tel:01226781344">01226 781344</a><br><a href="tel:07841204807">07841 204807</a><br><a href="mailto:manterfield1@btinternet.com">manterfield1@btinternet.com</a><br><span class="foot-hours">Mon&ndash;Fri 8am&ndash;5pm</span></div>
         <div class="r"><ul>{social}</ul></div>
         <div><ul>{nav}</ul></div>
         <div><ul>{svc}</ul></div>

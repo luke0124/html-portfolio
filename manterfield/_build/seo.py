@@ -27,6 +27,7 @@ BLOCK_RE = re.compile(r"\n?[ \t]*<!-- seo:start -->.*?<!-- seo:end -->", re.S)
 LOCAL_BUSINESS = {
     "@context": "https://schema.org",
     "@type": ["GeneralContractor", "RoofingContractor"],
+    "@id": DOMAIN + "/#business",
     "name": "Manterfield Building & Roofing Ltd",
     "url": DOMAIN + "/",
     "logo": DOMAIN + "/images/logo-round.webp",
@@ -44,6 +45,24 @@ LOCAL_BUSINESS = {
         "addressCountry": "GB",
     },
     "areaServed": ["Barnsley", "Wakefield", "Sheffield", "Leeds", "South Yorkshire"],
+    "hasMap": "https://www.google.com/maps?cid=11234015266589093734",
+    # Opening hours: Monday to Friday, 8am to 5pm (also shown on the Contact page and in the footer)
+    "openingHoursSpecification": [{
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "08:00",
+        "closes": "17:00",
+    }],
+    "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Building and roofing services",
+        "itemListElement": [
+            {"@type": "Offer", "itemOffered": {"@type": "Service", "name": n, "url": DOMAIN + "/services/" + sid + ".html"}}
+            for sid, n in [("building", "Building work"), ("extensions", "House extensions"), ("roofing", "Roofing and re-roofs"),
+                           ("renovations", "Home renovations"), ("loft-conversions", "Loft conversions"),
+                           ("commercial", "Commercial building"), ("landscaping", "Patios, driveways and landscaping")]
+        ],
+    },
     "sameAs": [
         "https://www.facebook.com/profile.php?id=61560415476579",
         "https://www.instagram.com/manterfield.building",
@@ -97,6 +116,22 @@ def apply():
         ]
         if rel in ("index.html", "contact.html"):
             lines.append('  <script type="application/ld+json">' + json.dumps(LOCAL_BUSINESS, ensure_ascii=False) + "</script>")
+        # Breadcrumbs (Home > Services/Projects > page) and a Service entry for service pages
+        if rel.startswith(("projects/", "services/")):
+            section, section_url = (("Projects", DOMAIN + "/projects.html") if rel.startswith("projects/")
+                                    else ("Services", DOMAIN + "/services.html"))
+            h1 = re.search(r"<h1[^>]*>(.*?)</h1>", s, re.S)
+            name = html.unescape(re.sub(r"<[^>]+>", "", h1.group(1))).strip() if h1 else title
+            crumbs = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": DOMAIN + "/"},
+                {"@type": "ListItem", "position": 2, "name": section, "item": section_url},
+                {"@type": "ListItem", "position": 3, "name": name, "item": url}]}
+            lines.append('  <script type="application/ld+json">' + json.dumps(crumbs, ensure_ascii=False) + "</script>")
+            if rel.startswith("services/"):
+                svc = {"@context": "https://schema.org", "@type": "Service", "name": name, "url": url,
+                       "description": desc, "provider": {"@id": DOMAIN + "/#business"},
+                       "areaServed": LOCAL_BUSINESS["areaServed"]}
+                lines.append('  <script type="application/ld+json">' + json.dumps(svc, ensure_ascii=False) + "</script>")
         lines.append("  <!-- seo:end -->")
         s = s.replace("</head>", "\n".join(lines) + "\n</head>", 1)
         with open(path, "w", encoding="utf-8") as f:

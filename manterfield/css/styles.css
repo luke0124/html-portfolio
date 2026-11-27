@@ -482,3 +482,5 @@ form.enquiry { display: grid; gap: 18px; }
 /* Footer: address block and five columns on wide screens */
 .foot-grid address { font-style: normal; }
 @media (min-width: 900px) { .foot-grid { grid-template-columns: 1.6fr 1fr 1fr 1fr 1.2fr; } }
+
+.foot-hours { display: inline-block; padding: 7px 0; color: var(--ink-soft); font-weight: 500; }
