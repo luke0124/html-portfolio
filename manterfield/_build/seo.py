@@ -20,7 +20,7 @@ import re
 HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.dirname(HERE)
 DOMAIN = "https://www.manterfieldbuilders.co.uk"
-DEFAULT_IMAGE = "videos/hero-poster.jpg"  # 1920x1080, used for link previews
+DEFAULT_IMAGE = "videos/hero2-poster.jpg"  # 1920x1080, used for link previews
 
 BLOCK_RE = re.compile(r"\n?[ \t]*<!-- seo:start -->.*?<!-- seo:end -->", re.S)
 
