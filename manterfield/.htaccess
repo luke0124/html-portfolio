@@ -6,9 +6,25 @@
 # Never show a bare list of files if someone visits a folder such as /images/
 Options -Indexes
 
+# Friendly page for addresses that don't exist
+ErrorDocument 404 /404.html
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+
+  # One address for the whole site: https://www.manterfieldbuilders.co.uk
+  # (only applies on the real domain; .well-known is left alone for the SSL certificate)
+  RewriteCond %{ENV:REDIRECT_STATUS} ^$
+  RewriteCond %{REQUEST_URI} !^/\.well-known/
+  RewriteCond %{HTTP_HOST} ^manterfieldbuilders\.co\.uk$ [NC]
+  RewriteRule ^ https://www.manterfieldbuilders.co.uk%{REQUEST_URI} [R=301,NE,L]
+  RewriteCond %{ENV:REDIRECT_STATUS} ^$
+  RewriteCond %{REQUEST_URI} !^/\.well-known/
+  RewriteCond %{HTTP_HOST} ^www\.manterfieldbuilders\.co\.uk$ [NC]
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://www.manterfieldbuilders.co.uk%{REQUEST_URI} [R=301,NE,L]
 
   # Old WordPress entry point
   RewriteRule ^index\.php$ / [R=301,L]
@@ -21,16 +37,10 @@ Options -Indexes
   RewriteRule ^privacy-policy/?$ /privacy-policy.html [R=301,L]
   RewriteRule ^terms-conditions/?$ /terms-conditions.html [R=301,L]
 
-  # Services (NE keeps the # so the browser jumps to the right section)
+  # Services: each has its own page now
   RewriteRule ^services/?$ /services.html [R=301,L]
-  RewriteRule ^services/building/?$ /services.html#building [R=301,NE,L]
-  RewriteRule ^services/extensions/?$ /services.html#extensions [R=301,NE,L]
-  RewriteRule ^services/roofing/?$ /services.html#roofing [R=301,NE,L]
-  RewriteRule ^services/storm-damage/?$ /services.html#roofing [R=301,NE,L]
-  RewriteRule ^services/renovations/?$ /services.html#renovations [R=301,NE,L]
-  RewriteRule ^services/loft-conversions/?$ /services.html#loft-conversions [R=301,NE,L]
-  RewriteRule ^services/commercial/?$ /services.html#commercial [R=301,NE,L]
-  RewriteRule ^services/landscaping/?$ /services.html#landscaping [R=301,NE,L]
+  RewriteRule ^services/(building|extensions|roofing|renovations|loft-conversions|commercial|landscaping)/?$ /services/$1.html [R=301,L]
+  RewriteRule ^services/storm-damage/?$ /services/roofing.html [R=301,L]
   RewriteRule ^services/(cellarbasement-conversions|tips-advice)/?$ /services.html [R=301,L]
 
   # Project gallery lists (all, commercial, extensions, roofing... and their /page/2/ etc.)
@@ -38,6 +48,10 @@ Options -Indexes
 
   # Individual projects keep the same name: /projects/darton-extension/ -> /projects/darton-extension.html
   RewriteRule ^projects/?$ /projects.html [R=301,L]
+  # Projects that were given clearer names
+  RewriteRule ^projects/1580(/|\.html)?$ /projects/hoylandswaine-re-roof.html [R=301,L]
+  RewriteRule ^projects/3163(/|\.html)?$ /projects/sunningdale-drive-cudworth-extension.html [R=301,L]
+  RewriteRule ^projects/16-toll-bar-road-rotherham-garage-construction-patio(/|\.html)?$ /projects/toll-bar-road-rotherham-garage-construction.html [R=301,L]
   RewriteCond %{DOCUMENT_ROOT}/projects/$1.html -f
   RewriteRule ^projects/([A-Za-z0-9_-]+)/?$ /projects/$1.html [R=301,L]
   # ...and any old project that no longer exists goes to the project list

@@ -58,8 +58,11 @@ def e(s):
 
 def pages():
     out = sorted(f for f in os.listdir(SITE) if f.endswith(".html"))
-    out += ["projects/" + f for f in sorted(os.listdir(os.path.join(SITE, "projects"))) if f.endswith(".html")]
-    return out
+    for sub in ("services", "projects"):
+        d = os.path.join(SITE, sub)
+        if os.path.isdir(d):
+            out += [sub + "/" + f for f in sorted(os.listdir(d)) if f.endswith(".html")]
+    return [p for p in out if p != "404.html"]
 
 
 def url_for(rel):
@@ -102,7 +105,7 @@ def apply():
     with open(os.path.join(SITE, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
         for rel in pages():
-            pr = "1.0" if rel == "index.html" else ("0.8" if "/" not in rel else "0.5")
+            pr = "1.0" if rel == "index.html" else ("0.9" if rel.startswith("services/") else ("0.8" if "/" not in rel else "0.5"))
             f.write(f"  <url><loc>{url_for(rel)}</loc><lastmod>{today}</lastmod><priority>{pr}</priority></url>\n")
         f.write("</urlset>\n")
     with open(os.path.join(SITE, "robots.txt"), "w", encoding="utf-8") as f:

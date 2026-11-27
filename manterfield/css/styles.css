@@ -462,3 +462,23 @@ form.enquiry { display: grid; gap: 18px; }
 .foot-base a { padding: 8px 2px; }
 .foot-fmb { padding: 4px 0; }
 .header-call { padding: 12px 18px; }
+
+/* Service pages */
+.svc-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.svc-head h2 a:hover { color: var(--purple); }
+.proj-about .svc-body .ticks { margin-top: 18px; }
+.proj-about .svc-body .list-intro { margin-top: 1.4em; }
+/* Areas we cover */
+.areas { columns: 1; column-gap: clamp(24px, 3vw, 48px); }
+@media (min-width: 640px) { .areas { columns: 2; } }
+@media (min-width: 1024px) { .areas { columns: 4; } }
+.area { break-inside: avoid; padding: 14px 0 18px; border-top: 1px solid var(--line); scroll-margin-top: 110px; }
+.area h3 { font-size: 20px; letter-spacing: -0.02em; }
+.area ul { list-style: none; margin: 8px 0 0; padding: 0; }
+.area li a { display: inline-block; padding: 5px 0; font-size: 15px; color: var(--ink-soft); }
+.area li a:hover { color: var(--purple); }
+.area:target h3 { color: var(--purple); }
+.proj-facts a { text-decoration: underline; text-underline-offset: 3px; }
+/* Footer: address block and five columns on wide screens */
+.foot-grid address { font-style: normal; }
+@media (min-width: 900px) { .foot-grid { grid-template-columns: 1.6fr 1fr 1fr 1fr 1.2fr; } }

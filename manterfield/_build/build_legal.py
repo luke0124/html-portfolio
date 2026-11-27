@@ -22,7 +22,7 @@ HEAD = '''<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=30">
+  <link rel="stylesheet" href="css/styles.css?v=31">
 </head>
 <body data-page="legal">
   <a class="skip" href="#main">Skip to content</a>
@@ -40,7 +40,7 @@ HEAD = '''<!DOCTYPE html>
 TAIL = '''      </div></div>
     </section>
   </main>
-  <script src="js/main.js?v=16"></script>
+  <script src="js/main.js?v=17"></script>
 </body>
 </html>
 '''
@@ -178,5 +178,6 @@ print("legal pages written")
 
 import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import seo
+import chrome, seo
+chrome.apply()
 seo.apply()

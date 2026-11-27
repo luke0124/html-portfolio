@@ -78,6 +78,34 @@ def paragraphs(p):
     return paras
 
 
+# Places named in project titles/text (the area we show for each project).
+TOWNS = ["High Hoyland", "Little Houghton", "Monk Bretton", "Ward Green", "Hood Green", "Low Valley", "Blacker Hill",
+         "Cundy Cross", "Hoylandswaine", "Stainborough", "Grimethorpe", "Hemingfield", "Mapplewell", "Thurgoland",
+         "Staincross", "Stairfoot", "Silkstone", "Birdwell", "Brampton", "Cudworth", "Darfield", "Royston", "Wombwell",
+         "Shafton", "Darton", "Woolley", "Higham", "Swinton", "Rothwell", "Wakefield", "Sheffield", "Rotherham", "Wath",
+         "Barnsley"]
+TOWN_ALIASES = {"Worsborough": "Worsbrough", "Worsbrough": "Worsbrough"}
+_STREET = re.compile(r"\b[A-Za-z\u2019']+(?: [A-Za-z\u2019']+)? (?:Road|Rd|Drive|Street|St|Lane|Close|Crescent|Avenue|Place|Estate)\b", re.I)
+
+
+def find_area(p):
+    """Town named in the project's own title, else its text. Street names are ignored
+    ("Wakefield Road" is not Wakefield). Returns "" when no place is stated."""
+    for source in (p["title"], p.get("text", "")):
+        s = _STREET.sub(" ", source)
+        for alias, town in TOWN_ALIASES.items():
+            if re.search(r"\b" + alias + r"\b", s, re.I):
+                return town
+        for town in TOWNS:
+            if re.search(r"\b" + re.escape(town) + r"\b", s, re.I):
+                return town
+    return ""
+
+
+def area_id(town):
+    return "area-" + re.sub(r"[^a-z]+", "-", town.lower()).strip("-")
+
+
 def trim(text, limit=155):
     """Cut text to at most `limit` characters at a word boundary (meta descriptions)."""
     text = re.sub(r"\s+", " ", text).strip()
@@ -193,7 +221,7 @@ def head(title, desc, root, page):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{root}css/styles.css?v=30">
+  <link rel="stylesheet" href="{root}css/styles.css?v=31">
 </head>
 <body data-page="{page}" data-root="{root}">
   <a class="skip" href="#main">Skip to content</a>
@@ -203,7 +231,7 @@ def head(title, desc, root, page):
 
 def tail(root):
     return f'''  </main>
-  <script src="{root}js/main.js?v=16"></script>
+  <script src="{root}js/main.js?v=17"></script>
 </body>
 </html>
 '''
@@ -221,7 +249,7 @@ def main():
             continue
         projects.append(dict(slug=p["slug"], title=p["title"].strip(), cat=p.get("cat") or category(p),
                              paras=paragraphs(p), imgs=imgs, cover_pos=p.get("cover_pos"), card_img=p.get("card_img"), card_pos=p.get("card_pos"),
-                             seo_title=p.get("seo_title")))
+                             seo_title=p.get("seo_title"), area=p.get("area") or find_area(p)))
     make_thumbs(projects)
 
     os.makedirs(os.path.join(SITE, "projects"), exist_ok=True)
@@ -229,13 +257,15 @@ def main():
     for i, p in enumerate(projects):
         prev_p, next_p = projects[i - 1], projects[(i + 1) % n]
         base = f"../images/projects/{p['slug']}/"
-        desc = trim(p["paras"][0] if p["paras"] else f"{p['title']}: {LABEL[p['cat']].lower()} project by Manterfield Building & Roofing, Barnsley.")
+        where = f" in {p['area']}" if p["area"] and p["area"].lower() not in p["title"].lower() else ""
+        desc = trim(p["paras"][0] if p["paras"] else f"{p['title']}: a {LABEL[p['cat']].lower()} project{where} by Manterfield Building & Roofing, Barnsley. See the photos and get a free quote.")
+        kind = LABEL[p["cat"]].lower()
         about = ""
         if p["paras"]:
             about = ('<section class="wrap proj-about">\n      <h2 class="reveal">About the project</h2>\n'
                      '      <div class="txt reveal">' + "".join(f"<p>{e(x)}</p>" for x in p["paras"]) + "</div>\n    </section>")
         gallery = "\n".join(
-            f'        <a href="{base}{f}" data-lightbox><img src="{base}thumbs/{f}" alt="{e(p["title"])}, photo {j + 1}" loading="lazy"></a>'
+            f'        <a href="{base}{f}" data-lightbox><img src="{base}thumbs/{f}" alt="{e(p["title"])} \u2013 {"finished " if j == len(p["imgs"]) - 1 else ""}{kind} project{e(where)}, photo {j + 1} of {len(p["imgs"])}" loading="lazy"></a>'
             for j, f in enumerate(p["imgs"]))
         body = f'''    <section class="wrap proj-hero">
       <span class="crumb reveal"><a href="../projects.html">Projects</a> / {e(LABEL[p["cat"]])}</span>
@@ -243,7 +273,7 @@ def main():
       <div class="proj-facts reveal">
         <div><span>Type</span>{e(LABEL[p["cat"]])}</div>
         <div><span>Photos</span>{len(p["imgs"])}</div>
-        <div><span>Area</span>Barnsley &amp; South Yorkshire</div>
+        <div><span>Area</span>{(f'<a href="../projects.html#{area_id(p["area"])}">{e(p["area"])}</a>') if p["area"] else "Barnsley &amp; South Yorkshire"}</div>
       </div>
     </section>
     <div class="wrap"><img class="proj-cover reveal-img" src="{base}{p["imgs"][-1]}" srcset="{base}thumbs/cover-{COVER_WIDTH}.jpg {COVER_WIDTH}w, {base}{p["imgs"][-1]} {full_w(p)}w" sizes="(max-width: 900px) calc(100vw - 32px), 1280px" alt="{e(p["title"])}, finished" fetchpriority="high"{(" style=\"object-position:" + p["cover_pos"] + "\"") if p.get("cover_pos") else ""}></div>
@@ -283,6 +313,22 @@ def main():
             <div class="ph"><img src="{("images/thumbs/" + os.path.basename(p["card_img"])) if p["card_img"] else ("images/projects/" + p["slug"] + "/thumbs/" + p["imgs"][-1])}" alt="{e(p["title"])}" loading="lazy"{(" style=\"object-position:" + p["card_pos"] + "\"") if p.get("card_pos") else ""}></div>
             <div class="project-meta"><span>{i + 1:02d}</span><span>{e(p["title"])}</span><span class="cat">{e(LABEL[p["cat"]])}</span></div>
           </a>''' for i, p in enumerate(projects))
+    by_town = {}
+    for p in projects:
+        if p["area"]:
+            by_town.setdefault(p["area"], []).append(p)
+    blocks = "\n".join(
+        f'          <div class="area reveal" id="{area_id(t)}"><h3>{e(t)}</h3><ul>' +
+        "".join(f'<li><a href="projects/{p["slug"]}.html">{e(p["seo_title"] or p["title"])}</a></li>' for p in ps) + "</ul></div>"
+        for t, ps in sorted(by_town.items()))
+    areas_html = f'''    <section class="pad" style="padding-top:0">
+      <div class="wrap">
+        <div class="sec-head reveal"><h2>Areas we cover</h2><span class="muted">Barnsley, Wakefield and across South Yorkshire</span></div>
+        <div class="areas">
+{blocks}
+        </div>
+      </div>
+    </section>'''
     listing = f'''    <section class="page-hero">
       <div class="wrap">
         <span class="crumb reveal">Project Gallery</span>
@@ -300,6 +346,7 @@ def main():
         </div>
       </div>
     </section>
+{areas_html}
     <section class="dark pad cta">
       <div class="wrap">
         <h2 class="reveal">Make us top of your contractor list.</h2>
@@ -315,7 +362,9 @@ def main():
                 + listing + tail(""))
     update_home(projects)
     print(f"{n} project pages written;", counts)
-    import seo
+    import build_services, chrome, seo
+    build_services.build(sys.modules[__name__], projects)
+    chrome.apply()
     seo.apply()
 
 
