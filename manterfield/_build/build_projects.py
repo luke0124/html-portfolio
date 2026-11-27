@@ -358,7 +358,7 @@ def main():
     </section>
 '''
     with open(os.path.join(SITE, "projects.html"), "w") as f:
-        f.write(head("Projects", "Extensions, re-roofs, renovations and loft conversions across Barnsley, Wakefield and South Yorkshire.", "", "projects")
+        f.write(head("Building & Roofing Projects in Barnsley", "Photos of over 100 building and roofing projects across Barnsley, Wakefield and South Yorkshire: extensions, re-roofs, loft conversions and renovations.", "", "projects")
                 + listing + tail(""))
     update_home(projects)
     print(f"{n} project pages written;", counts)
