@@ -1,0 +1,116 @@
+# Manterfield Building & Roofing - redirects from the old WordPress site
+# Anyone using an old address (Google results, bookmarks, Facebook posts, other
+# websites) is sent permanently (301) to the matching new page.
+# Upload this file to public_html next to index.html.
+
+# Never show a bare list of files if someone visits a folder such as /images/
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Old WordPress entry point
+  RewriteRule ^index\.php$ / [R=301,L]
+  RewriteRule ^home(/.*)?$ / [R=301,L]
+
+  # Main pages
+  RewriteRule ^about-us/?$ /about.html [R=301,L]
+  RewriteRule ^contact-us/?$ /contact.html [R=301,L]
+  RewriteRule ^testimonials(/page/[0-9]+)?/?$ /testimonials.html [R=301,L]
+  RewriteRule ^privacy-policy/?$ /privacy-policy.html [R=301,L]
+  RewriteRule ^terms-conditions/?$ /terms-conditions.html [R=301,L]
+
+  # Services (NE keeps the # so the browser jumps to the right section)
+  RewriteRule ^services/?$ /services.html [R=301,L]
+  RewriteRule ^services/building/?$ /services.html#building [R=301,NE,L]
+  RewriteRule ^services/extensions/?$ /services.html#extensions [R=301,NE,L]
+  RewriteRule ^services/roofing/?$ /services.html#roofing [R=301,NE,L]
+  RewriteRule ^services/storm-damage/?$ /services.html#roofing [R=301,NE,L]
+  RewriteRule ^services/renovations/?$ /services.html#renovations [R=301,NE,L]
+  RewriteRule ^services/loft-conversions/?$ /services.html#loft-conversions [R=301,NE,L]
+  RewriteRule ^services/commercial/?$ /services.html#commercial [R=301,NE,L]
+  RewriteRule ^services/landscaping/?$ /services.html#landscaping [R=301,NE,L]
+  RewriteRule ^services/(cellarbasement-conversions|tips-advice)/?$ /services.html [R=301,L]
+
+  # Project gallery lists (all, commercial, extensions, roofing... and their /page/2/ etc.)
+  RewriteRule ^project-area(/.*)?$ /projects.html [R=301,L]
+
+  # Individual projects keep the same name: /projects/darton-extension/ -> /projects/darton-extension.html
+  RewriteRule ^projects/?$ /projects.html [R=301,L]
+  RewriteCond %{DOCUMENT_ROOT}/projects/$1.html -f
+  RewriteRule ^projects/([A-Za-z0-9_-]+)/?$ /projects/$1.html [R=301,L]
+  # ...and any old project that no longer exists goes to the project list
+  RewriteRule ^projects/[A-Za-z0-9_-]+/?$ /projects.html [R=301,L]
+
+  # Old news / event posts
+  RewriteRule ^certificate-from-fmb-for-high-quality-standard(-2)?/?$ /about.html [R=301,L]
+  RewriteRule ^mr-simmons-re-roof/?$ /testimonials.html [R=301,L]
+  RewriteRule ^boxing-match-barnsley-metrodome-151114/?$ / [R=301,L]
+</IfModule>
+
+# Manterfield Building & Roofing - browser caching (Expires headers)
+# Upload this file to public_html next to index.html.
+# Needs Apache mod_expires (and mod_headers for Cache-Control); both are
+# standard on cPanel hosting. Each block is skipped safely if a module is missing.
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Anything not listed below: re-check after 1 hour
+  ExpiresDefault "access plus 1 hour"
+
+  # Pages: short, so text edits show up quickly
+  ExpiresByType text/html "access plus 1 hour"
+
+  # Styles and scripts: the pages link them as css/styles.css?v=NN and
+  # js/main.js?v=NN, so a new version number forces a fresh download
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+
+  # Photos, logo and icons
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/webp "access plus 1 month"
+  ExpiresByType image/gif "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/x-icon "access plus 1 month"
+  ExpiresByType image/vnd.microsoft.icon "access plus 1 month"
+
+  # Hero video
+  ExpiresByType video/mp4 "access plus 1 month"
+
+  # Fonts (if ever self-hosted)
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>
+
+# Modern equivalent of Expires: Cache-Control, so every browser and CDN agrees
+<IfModule mod_headers.c>
+  <FilesMatch "\.(css|js|jpe?g|png|webp|gif|svg|ico|mp4)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  <FilesMatch "\.(woff2?)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+</IfModule>
+
+# Compression: send text files (pages, styles, scripts) gzip-compressed, about 70% smaller.
+# Photos and video are already compressed, so they are left alone.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/xml
+  AddOutputFilterByType DEFLATE application/javascript text/javascript application/json
+  AddOutputFilterByType DEFLATE application/ld+json image/svg+xml
+</IfModule>
+
+# The enquiry form script must never be cached
+<Files "send-enquiry.php">
+  <IfModule mod_expires.c>
+    ExpiresActive Off
+  </IfModule>
+</Files>
